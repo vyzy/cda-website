@@ -106,13 +106,19 @@
     onScroll(); // Initial position
   }
 
-  // --- Hero content entrance ---
+  // --- Hero content entrance + auto-dismiss after 3s ---
   function initHeroContent() {
     var content = document.querySelector('.cda-hero--gallery .cda-hero__content');
+    var scrollHint = document.querySelector('.cda-hero--gallery .cda-hero__scroll');
     if (!content) return;
 
     if (reducedMotion || !hasAnime) {
       content.style.opacity = '1';
+      // Still dismiss after 3s
+      setTimeout(function () {
+        content.classList.add('cda-hero__content--gone');
+        if (scrollHint) scrollHint.style.opacity = '0';
+      }, 3000);
       return;
     }
 
@@ -148,6 +154,15 @@
     setTimeout(function () {
       content.style.opacity = '1';
     }, 200);
+
+    // Dismiss title after 3 seconds — scrolls up and fades out
+    setTimeout(function () {
+      content.classList.add('cda-hero__content--gone');
+      if (scrollHint) {
+        scrollHint.style.transition = 'opacity 0.6s ease';
+        scrollHint.style.opacity = '0';
+      }
+    }, 3000);
   }
 
   function init() {

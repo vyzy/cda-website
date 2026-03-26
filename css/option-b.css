@@ -97,6 +97,14 @@
   max-width: 700px;
   padding: 0 2rem;
   pointer-events: auto;
+  transition: transform 0.8s cubic-bezier(0.14, 1, 0.34, 1),
+              opacity 0.8s cubic-bezier(0.14, 1, 0.34, 1);
+}
+
+.cda-hero--gallery .cda-hero__content--gone {
+  transform: translate(-50%, -150%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .cda-hero--gallery .cda-hero__title {
