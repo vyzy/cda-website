@@ -22,6 +22,13 @@
 
     if (!container || !grid || !items.length) return;
 
+    // Duplicate grid items 2x for seamless infinite scroll feel
+    var originalHTML = grid.innerHTML;
+    grid.innerHTML = originalHTML + originalHTML + originalHTML;
+
+    // Re-query after duplication
+    items = grid.querySelectorAll('.cda-gallery-wall__item');
+
     var ticking = false;
 
     function onScroll() {
@@ -39,13 +46,17 @@
           (scrollY - containerTop) / (containerHeight - viewportHeight)
         ));
 
-        // Move the grid upward as we scroll — creates the "scrolling through art" feel
-        var gridTranslateY = -progress * 60; // percentage
+        // Move the grid upward — tripled content means more to scroll through
+        var gridTranslateY = -progress * 70; // percentage of the tripled grid
         grid.style.transform = 'translateY(' + gridTranslateY + '%)';
 
         // 3D effect on each item based on its position in viewport
         items.forEach(function (item) {
           var rect = item.getBoundingClientRect();
+
+          // Skip items far off screen for performance
+          if (rect.bottom < -200 || rect.top > viewportHeight + 200) return;
+
           var itemCenter = rect.top + rect.height / 2;
           var viewCenter = viewportHeight / 2;
 
