@@ -161,17 +161,16 @@
       content.style.opacity = '1';
     }, 200);
 
-    // Show/hide title based on scroll position — reappears when scrolled back to top
-    function checkScrollTitle() {
-      if (window.pageYOffset > 200) {
-        content.classList.add('cda-hero__content--gone');
-        if (scrollHint) scrollHint.style.opacity = '0';
-      } else {
-        content.classList.remove('cda-hero__content--gone');
-        if (scrollHint) scrollHint.style.opacity = '0.7';
-      }
+    // Fade out text the instant user starts scrolling — tied to scroll position
+    var fadeDist = 150; // fully gone by 150px scroll
+    function onScrollFade() {
+      var y = window.pageYOffset;
+      var opacity = Math.max(0, 1 - (y / fadeDist));
+      content.style.opacity = opacity;
+      content.style.transform = 'translate(-50%, calc(-50% - ' + (y * 0.5) + 'px))';
+      if (scrollHint) scrollHint.style.opacity = Math.max(0, opacity - 0.3);
     }
-    window.addEventListener('scroll', checkScrollTitle, { passive: true });
+    window.addEventListener('scroll', onScrollFade, { passive: true });
   }
 
   function init() {
