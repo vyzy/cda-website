@@ -180,6 +180,54 @@
     track.innerHTML = logos + logos;
   }
 
+  // --- The Line Studio-style section entrance animations ---
+  function initSectionEntrances() {
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Apply entrance class to main sections
+    var sections = document.querySelectorAll('.cda-section, .cda-proof, .cda-logos, .cda-final-cta');
+    sections.forEach(function (el) {
+      if (!reducedMotion) {
+        el.classList.add('cda-section-enter');
+      }
+    });
+
+    // Apply footer entrance
+    var footer = document.querySelector('.cda-footer');
+    if (footer && !reducedMotion) {
+      footer.classList.add('cda-footer-enter');
+    }
+
+    if (reducedMotion) return;
+
+    // Observe sections
+    var sectionObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('cda-section-enter--visible');
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    sections.forEach(function (el) { sectionObserver.observe(el); });
+
+    // Observe footer with staggered children
+    if (footer) {
+      var footerObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('cda-footer-enter--visible');
+            entry.target.classList.add('cda-footer--animated');
+            footerObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      footerObserver.observe(footer);
+    }
+  }
+
   // --- Smooth scroll for anchor links ---
   function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
@@ -200,6 +248,7 @@
     initStaggerReveal();
     initCountUp();
     initLogoTicker();
+    initSectionEntrances();
     initSmoothScroll();
   }
 
