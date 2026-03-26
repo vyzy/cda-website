@@ -101,7 +101,6 @@
         // Toggle fixed overlay visibility when past gallery
         if (heroSection) {
           var pastGallery = scrollY > containerTop + containerHeight - viewportHeight * 1.5;
-          document.body.classList.toggle('cda-gallery--past', pastGallery);
           heroSection.classList.toggle('cda-gallery--past', pastGallery);
         }
 

@@ -6,18 +6,17 @@
 /* --- Gallery scroll container --- */
 .cda-gallery-wall {
   position: relative;
-  height: 300vh; /* ~3-4 seconds of scroll */
+  height: 300vh;
   background: var(--cda-black);
-  overflow: clip; /* clip content without creating scroll context */
+  overflow: clip;
 }
 
-/* Sticky viewport — shared perspective for cylindrical tunnel */
+/* Sticky viewport */
 .cda-gallery-wall__viewport {
   position: sticky;
   top: 0;
   height: 100vh;
   width: 100%;
-  /* NO overflow:hidden — it clips 3D transformed children */
 }
 
 /* Grid layout */
@@ -28,12 +27,11 @@
   padding: clamp(6px, 1vw, 12px);
   width: 100%;
   will-change: transform;
-  /* Perspective on the grid itself — overflow:hidden on parent won't conflict */
   perspective: 1000px;
-  perspective-origin: 50% 50vh; /* 50% of viewport height = center of screen */
+  perspective-origin: 50% 50vh;
 }
 
-/* Individual grid item — no overflow:hidden (clips 3D), no per-item perspective */
+/* Individual grid item */
 .cda-gallery-wall__item {
   position: relative;
   aspect-ratio: 4 / 3;
@@ -42,7 +40,6 @@
   transform-style: preserve-3d;
 }
 
-/* Make some items span multiple cells for visual hierarchy */
 .cda-gallery-wall__item--wide {
   grid-column: span 2;
   aspect-ratio: 16 / 9;
@@ -53,7 +50,6 @@
   aspect-ratio: 3 / 4;
 }
 
-/* Image inside item */
 .cda-gallery-wall__item img {
   width: 100%;
   height: 100%;
@@ -62,19 +58,18 @@
   border-radius: 6px;
 }
 
-/* Hover: subtle pop */
 .cda-gallery-wall__item:hover img {
   transform: scale(1.05);
   transition: transform 0.4s ease;
 }
 
-/* --- Hero overlay + content centered on top of grid --- */
+/* --- Hero overlay + content --- */
 .cda-hero--gallery {
   position: relative;
   background: var(--cda-black);
 }
 
-.page-gallery .cda-hero__overlay {
+.cda-hero--gallery .cda-hero__overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -85,7 +80,7 @@
   pointer-events: none;
 }
 
-.page-gallery .cda-hero__content {
+.cda-hero--gallery .cda-hero__content {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -99,20 +94,20 @@
               opacity 0.8s cubic-bezier(0.14, 1, 0.34, 1);
 }
 
-.page-gallery .cda-hero__content--gone {
+.cda-hero--gallery .cda-hero__content--gone {
   transform: translate(-50%, -150%);
   opacity: 0;
   pointer-events: none;
 }
 
-.page-gallery .cda-hero__title {
+.cda-hero--gallery .cda-hero__title {
   font-family: var(--cda-font-display);
   font-size: clamp(2.5rem, 5vw, 4rem);
   color: var(--cda-white);
   margin-bottom: 0.75rem;
 }
 
-.page-gallery .cda-hero__subtitle {
+.cda-hero--gallery .cda-hero__subtitle {
   font-size: clamp(0.85rem, 1.2vw, 1rem);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -120,7 +115,7 @@
   margin-bottom: 2rem;
 }
 
-.page-gallery .cda-hero__scroll {
+.cda-hero--gallery .cda-hero__scroll {
   position: fixed;
   bottom: 2rem;
   left: 50%;
@@ -128,7 +123,7 @@
   z-index: 11;
 }
 
-/* Hide fixed elements once scrolled past gallery */
+/* Hide fixed hero elements once scrolled past gallery */
 .cda-gallery--past .cda-hero__overlay,
 .cda-gallery--past .cda-hero__content,
 .cda-gallery--past .cda-hero__scroll {
@@ -137,7 +132,7 @@
   transition: opacity 0.5s ease;
 }
 
-/* --- Responsive --- */
+/* --- Responsive hero --- */
 @media (max-width: 1024px) {
   .cda-gallery-wall__grid {
     grid-template-columns: repeat(4, 1fr);
@@ -151,18 +146,20 @@
   .cda-gallery-wall__item--wide {
     grid-column: span 1;
   }
-  .cda-gallery-wall {
-    height: 300vh;
-  }
 }
 
 /* --- Text-based logo ticker --- */
 .cda-logos__track--text {
   display: flex;
   gap: 3rem;
-  animation: cda-scroll-logos 25s linear infinite;
   width: max-content;
   padding: 0 2rem;
+  animation: cda-text-ticker 20s linear infinite;
+}
+
+@keyframes cda-text-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .cda-logos__track--text span {
@@ -178,116 +175,7 @@
   color: var(--cda-white);
 }
 
-/* Fix section gaps — reduce clip-path cut and remove stats bar gap */
-.page-gallery .cda-proof {
-  padding: 2rem 0;
-}
-
-.page-gallery .cda-logos {
-  padding: 2rem 0;
-}
-
-/* Instructor section — constrain height */
-.page-gallery .cda-instructors {
-  overflow: hidden;
-  max-height: 500px;
-}
-
-/* Instructor cards — use concept art not headshots */
-.page-gallery .cda-instructor-card__photo {
-  border-radius: 8px;
-  width: 180px;
-  height: 220px;
-  object-fit: cover;
-}
-
-.page-gallery .cda-instructor-card {
-  flex: 0 0 220px;
-}
-
-/* --- Skew theme carried through below-fold --- */
-
-/* Subtle skewed section dividers — 1% is enough to hint at the tunnel theme */
-.page-gallery .cda-proof,
-.page-gallery .cda-classes,
-.page-gallery .cda-gallery,
-.page-gallery .cda-testimonials {
-  clip-path: polygon(0 1%, 100% 0%, 100% 99%, 0% 100%);
-}
-
-/* Alternate skew direction — skip instructors (perspective already on cards) */
-.page-gallery .cda-logos,
-.page-gallery .cda-final-cta {
-  clip-path: polygon(0 0%, 100% 1%, 100% 100%, 0% 99%);
-}
-
-/* Center the logos label */
-.page-gallery .cda-logos__label {
-  padding-left: 2rem;
-}
-
-/* Class list rows: subtle alternating tilt on the preview panel */
-.page-gallery .cda-classes__preview {
-  transform: perspective(800px) rotateY(-2deg);
-  transition: transform 0.5s cubic-bezier(0.14, 1, 0.34, 1);
-}
-
-.page-gallery .cda-classes__preview:hover {
-  transform: perspective(800px) rotateY(0deg);
-}
-
-/* Instructor cards: very subtle alternating tilt */
-.page-gallery .cda-instructor-card:nth-child(odd) {
-  transform: perspective(1000px) rotateY(1deg);
-}
-
-.page-gallery .cda-instructor-card:nth-child(even) {
-  transform: perspective(1000px) rotateY(-1deg);
-}
-
-.page-gallery .cda-instructor-card:hover {
-  transform: perspective(1000px) rotateY(0deg) translateY(-4px) !important;
-}
-
-/* Gallery items: subtle convergence like the hero tunnel */
-.page-gallery .cda-gallery__grid {
-  perspective: 600px;
-  perspective-origin: 50% 50%;
-}
-
-.page-gallery .cda-gallery__item:nth-child(3n+1) {
-  transform: rotateY(2deg);
-}
-
-.page-gallery .cda-gallery__item:nth-child(3n+3) {
-  transform: rotateY(-2deg);
-}
-
-/* Testimonials: very subtle skew */
-.page-gallery .cda-testimonial:first-child {
-  transform: perspective(1000px) rotateY(1deg);
-}
-
-.page-gallery .cda-testimonial:last-child {
-  transform: perspective(1000px) rotateY(-1deg);
-}
-
-/* Override ALL shared entrance animations — Option B has its own skew theme */
-.page-gallery .cda-section-enter,
-.page-gallery .cda-footer-enter,
-.page-gallery .cda-reveal,
-.page-gallery .cda-reveal-stagger {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-.page-gallery .cda-footer__grid > div,
-.page-gallery .cda-footer__bottom {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-/* Reduced motion */
+/* --- Reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   .cda-gallery-wall__item {
     transform: none !important;
