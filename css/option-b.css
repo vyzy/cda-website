@@ -205,9 +205,8 @@
   clip-path: polygon(0 1%, 100% 0%, 100% 99%, 0% 100%);
 }
 
-/* Alternate skew direction */
+/* Alternate skew direction — skip instructors (perspective already on cards) */
 .page-gallery .cda-logos,
-.page-gallery .cda-instructors,
 .page-gallery .cda-final-cta {
   clip-path: polygon(0 0%, 100% 1%, 100% 100%, 0% 99%);
 }
@@ -238,17 +237,17 @@
   transform: perspective(800px) rotateY(0deg) translateY(-6px) !important;
 }
 
-/* Instructor cards: alternating slight tilt */
+/* Instructor cards: very subtle alternating tilt */
 .page-gallery .cda-instructor-card:nth-child(odd) {
-  transform: perspective(600px) rotateY(2deg);
+  transform: perspective(1000px) rotateY(1deg);
 }
 
 .page-gallery .cda-instructor-card:nth-child(even) {
-  transform: perspective(600px) rotateY(-2deg);
+  transform: perspective(1000px) rotateY(-1deg);
 }
 
 .page-gallery .cda-instructor-card:hover {
-  transform: perspective(600px) rotateY(0deg) translateY(-4px) !important;
+  transform: perspective(1000px) rotateY(0deg) translateY(-4px) !important;
 }
 
 /* Gallery items: subtle convergence like the hero tunnel */
@@ -265,13 +264,13 @@
   transform: rotateY(-2deg);
 }
 
-/* Testimonials: subtle skew */
+/* Testimonials: very subtle skew */
 .page-gallery .cda-testimonial:first-child {
-  transform: perspective(600px) rotateY(1.5deg);
+  transform: perspective(1000px) rotateY(1deg);
 }
 
 .page-gallery .cda-testimonial:last-child {
-  transform: perspective(600px) rotateY(-1.5deg);
+  transform: perspective(1000px) rotateY(-1deg);
 }
 
 /* Reduced motion */
