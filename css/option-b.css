@@ -175,6 +175,92 @@
   color: var(--cda-white);
 }
 
+/* --- Option B section overrides ---
+   Shared.css was modified by Option A with slanted cards and dramatic
+   entrance rotations. Override these for Option B's clean dark theme. */
+
+/* Neutralize Option A's slanted instructor cards */
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card {
+  transform: none;
+  aspect-ratio: auto;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card:nth-child(even) {
+  transform: none;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Restore original circular photo + vertical card layout */
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card__photo {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1.25rem;
+  border: 2px solid var(--cda-gray-800);
+  display: block;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card__artwork {
+  display: none;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card__acetate {
+  display: none;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card__info {
+  position: static;
+  background: none;
+  padding: 0;
+  opacity: 1;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructors__scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructors__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cda-hero--gallery ~ .cda-instructors .cda-instructor-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  text-align: center;
+}
+
+/* Neutralize Option A's dramatic section entrance rotations */
+.cda-hero--gallery ~ .cda-section-enter {
+  transform: translateY(30px);
+}
+
+.cda-hero--gallery ~ .cda-section-enter:nth-child(even) {
+  transform: translateY(30px);
+}
+
+.cda-hero--gallery ~ .cda-section-enter--visible {
+  transform: translateY(0);
+}
+
+/* Testimonials: no slant */
+.cda-hero--gallery ~ .cda-testimonials .cda-testimonial {
+  transform: none;
+}
+
 /* --- Reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   .cda-gallery-wall__item {
