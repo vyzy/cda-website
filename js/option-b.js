@@ -22,9 +22,9 @@
 
     if (!container || !grid || !items.length) return;
 
-    // Duplicate grid items to fill the scroll runway
+    // Duplicate grid items to fill the scroll runway (4x = ~20 rows = 5000px)
     var originalHTML = grid.innerHTML;
-    grid.innerHTML = originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML;
+    grid.innerHTML = originalHTML + originalHTML + originalHTML + originalHTML;
 
     // Re-query after duplication
     items = grid.querySelectorAll('.cda-gallery-wall__item');
@@ -48,13 +48,15 @@
 
         // Move the grid upward — tripled content means more to scroll through
         // Scroll grid via translateY
-        // Start: grid top aligns with viewport top (show first rows)
-        // End: grid bottom aligns with viewport bottom (show last rows)
-        var gridHeight = grid.scrollHeight;
-        var scrollableDistance = Math.max(0, gridHeight - viewportHeight);
-        // progress 0 = top of grid visible, progress 1 = bottom of grid visible
-        var gridTranslateY = -(progress * scrollableDistance);
+        // Cap scroll distance to show a reasonable amount of the grid
+        // We want to scroll through ~3000px of grid content during the 300vh scroll
+        var maxScroll = 3000;
+        var gridTranslateY = -(progress * maxScroll);
         grid.style.transform = 'translate3d(0,' + gridTranslateY + 'px,0)';
+
+        // Update perspective-origin to track the visual center of the viewport
+        // relative to the grid's current position
+        grid.style.perspectiveOrigin = '50% ' + (viewportHeight / 2 - gridTranslateY) + 'px';
 
         var viewportWidth = window.innerWidth;
 
