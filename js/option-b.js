@@ -22,9 +22,9 @@
 
     if (!container || !grid || !items.length) return;
 
-    // Duplicate grid items 5x for seamless infinite scroll feel
+    // Duplicate grid items to fill the scroll runway
     var originalHTML = grid.innerHTML;
-    grid.innerHTML = originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML;
+    grid.innerHTML = originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML + originalHTML;
 
     // Re-query after duplication
     items = grid.querySelectorAll('.cda-gallery-wall__item');
@@ -47,12 +47,11 @@
         ));
 
         // Move the grid upward — tripled content means more to scroll through
-        // Scroll grid by moving its top position based on scroll progress
-        // gridScrollable = how much of the grid is hidden below the viewport
+        // Scroll grid via translateY — calculated from actual grid height
         var gridHeight = grid.scrollHeight;
-        var gridScrollable = gridHeight - viewportHeight;
-        var gridTop = -progress * gridScrollable;
-        grid.style.top = gridTop + 'px';
+        var scrollableDistance = Math.max(0, gridHeight - viewportHeight);
+        var gridTranslateY = -progress * scrollableDistance;
+        grid.style.transform = 'translateY(' + gridTranslateY + 'px)';
 
         var viewportWidth = window.innerWidth;
 

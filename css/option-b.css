@@ -23,16 +23,14 @@
   transform-style: preserve-3d;
 }
 
-/* Grid layout — positioned absolutely so we can scroll it via top */
+/* Grid layout — in-flow, scrolled via transform */
 .cda-gallery-wall__grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: clamp(6px, 1vw, 12px);
   padding: clamp(6px, 1vw, 12px);
   width: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
+  will-change: transform;
   transform-style: preserve-3d;
 }
 
