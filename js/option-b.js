@@ -1,5 +1,7 @@
 /* ============================================
-   Option B: "The Gallery Wall" — Interactive Flip Mosaic JS
+   Option B: "The Gallery Wall" — Scroll-Driven 3D Grid
+   Inspired by Codrops ScrollAnimationsGrid index7
+   Vanilla JS — no GSAP, no Lenis
    ============================================ */
 
 (function () {
@@ -8,64 +10,75 @@
   var hasAnime = typeof anime !== 'undefined';
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // --- Staggered mosaic reveal ---
-  function initMosaicReveal() {
-    var tiles = document.querySelectorAll('.cda-mosaic__tile');
-    if (!tiles.length) return;
-
-    if (reducedMotion || !hasAnime) {
-      tiles.forEach(function (tile) {
-        tile.style.opacity = '1';
-        tile.style.transform = 'none';
-      });
-      return;
-    }
-
-    anime({
-      targets: '.cda-mosaic__tile',
-      opacity: [0, 1],
-      scale: [0.95, 1],
-      delay: anime.stagger(100, { grid: [4, 3], from: 'center' }),
-      duration: 800,
-      easing: 'cubicBezier(0.14, 1, 0.34, 1)'
-    });
-  }
-
-  // --- Sequential breathing (one tile at a time pulses to color) ---
-  function initBreathing() {
+  // --- Scroll-driven 3D animation on grid items ---
+  function initScrollGrid() {
     if (reducedMotion) return;
 
-    var tiles = document.querySelectorAll('.cda-mosaic__tile');
-    if (!tiles.length) return;
+    var container = document.querySelector('.cda-gallery-wall');
+    var viewport = document.querySelector('.cda-gallery-wall__viewport');
+    var grid = document.querySelector('.cda-gallery-wall__grid');
+    var items = document.querySelectorAll('.cda-gallery-wall__item');
+    var heroSection = document.querySelector('.cda-hero--gallery');
 
-    var currentIndex = 0;
-    var breathingClass = 'cda-mosaic__tile--breathing';
+    if (!container || !grid || !items.length) return;
 
-    function breatheNext() {
-      // Remove from previous
-      tiles.forEach(function (t) { t.classList.remove(breathingClass); });
+    var ticking = false;
 
-      // Add to current
-      tiles[currentIndex].classList.add(breathingClass);
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
 
-      // Animate the scale if anime.js available
-      if (hasAnime) {
-        anime({
-          targets: tiles[currentIndex],
-          scale: [1, 1.03, 1],
-          duration: 3000,
-          easing: 'easeInOutSine'
+      requestAnimationFrame(function () {
+        var scrollY = window.pageYOffset;
+        var containerTop = container.offsetTop;
+        var containerHeight = container.offsetHeight;
+        var viewportHeight = window.innerHeight;
+
+        // Progress through the gallery section (0 = top, 1 = bottom)
+        var progress = Math.max(0, Math.min(1,
+          (scrollY - containerTop) / (containerHeight - viewportHeight)
+        ));
+
+        // Move the grid upward as we scroll — creates the "scrolling through art" feel
+        var gridTranslateY = -progress * 60; // percentage
+        grid.style.transform = 'translateY(' + gridTranslateY + '%)';
+
+        // 3D effect on each item based on its position in viewport
+        items.forEach(function (item) {
+          var rect = item.getBoundingClientRect();
+          var itemCenter = rect.top + rect.height / 2;
+          var viewCenter = viewportHeight / 2;
+
+          // -1 at top of screen, 0 at center, +1 at bottom
+          var offset = (itemCenter - viewCenter) / viewportHeight;
+          offset = Math.max(-1, Math.min(1, offset));
+
+          // 3D rotation: items above center tilt forward, below tilt back
+          var rotateX = offset * 35;
+          // Scale: smaller at edges, full size at center
+          var scale = 1 - Math.abs(offset) * 0.15;
+          // Opacity: fade at extreme edges
+          var opacity = 1 - Math.abs(offset) * 0.4;
+
+          item.style.transform = 'perspective(1200px) rotateX(' + rotateX + 'deg) scale(' + scale + ')';
+          item.style.opacity = Math.max(0.3, opacity);
         });
-      }
 
-      currentIndex = (currentIndex + 1) % tiles.length;
+        // Toggle fixed overlay visibility when past gallery
+        if (heroSection) {
+          if (scrollY > containerTop + containerHeight - viewportHeight - 100) {
+            heroSection.classList.add('cda-gallery--past');
+          } else {
+            heroSection.classList.remove('cda-gallery--past');
+          }
+        }
+
+        ticking = false;
+      });
     }
 
-    // Start after initial reveal
-    setTimeout(function () {
-      breatheNext();
-      setInterval(breatheNext, 4000);
-    }, 2000);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // Initial position
   }
 
   // --- Hero content entrance ---
@@ -80,45 +93,41 @@
 
     content.style.opacity = '0';
 
-    anime({
-      targets: content,
-      opacity: [0, 1],
-      scale: [0.95, 1],
-      duration: 1000,
-      delay: 800,
-      easing: 'cubicBezier(0.14, 1, 0.34, 1)'
-    });
-  }
+    anime.timeline({ easing: 'cubicBezier(0.14, 1, 0.34, 1)' })
+      .add({
+        targets: '.cda-hero--gallery .cda-hero__title',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 1000,
+        delay: 300
+      })
+      .add({
+        targets: '.cda-hero--gallery .cda-hero__subtitle',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 800
+      }, '-=600')
+      .add({
+        targets: '.cda-hero--gallery .cda-btn',
+        opacity: [0, 1],
+        translateY: [15, 0],
+        duration: 800
+      }, '-=500')
+      .add({
+        targets: '.cda-hero--gallery .cda-hero__scroll',
+        opacity: [0, 0.7],
+        duration: 800
+      }, '-=400');
 
-  // --- Touch device: tap to flip (since hover doesn't work) ---
-  function initTouchFlip() {
-    if (!('ontouchstart' in window)) return;
-
-    var tiles = document.querySelectorAll('.cda-mosaic__tile');
-    tiles.forEach(function (tile) {
-      tile.addEventListener('click', function (e) {
-        // Toggle a flipped class for touch
-        var isFlipped = tile.classList.contains('cda-mosaic__tile--flipped');
-        // Unflip all others
-        tiles.forEach(function (t) { t.classList.remove('cda-mosaic__tile--flipped'); });
-        if (!isFlipped) {
-          tile.classList.add('cda-mosaic__tile--flipped');
-        }
-        e.preventDefault();
-      });
-    });
-
-    // Add CSS for touch flip state
-    var style = document.createElement('style');
-    style.textContent = '.cda-mosaic__tile--flipped .cda-mosaic__front { transform: rotateY(-180deg); } .cda-mosaic__tile--flipped .cda-mosaic__back { transform: rotateY(0deg); }';
-    document.head.appendChild(style);
+    // Show container
+    setTimeout(function () {
+      content.style.opacity = '1';
+    }, 200);
   }
 
   function init() {
-    initMosaicReveal();
-    initBreathing();
+    initScrollGrid();
     initHeroContent();
-    initTouchFlip();
   }
 
   if (document.readyState === 'loading') {

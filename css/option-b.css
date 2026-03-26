@@ -1,214 +1,166 @@
 /* ============================================
-   Option B: "The Gallery Wall" — Interactive Flip Mosaic
+   Option B: "The Gallery Wall" — Scroll-Driven 3D Grid
+   Inspired by tympanus.net/Development/ScrollAnimationsGrid/index7.html
    ============================================ */
 
-.cda-hero--gallery {
-  padding: 0;
+/* --- Gallery scroll container --- */
+.cda-gallery-wall {
+  position: relative;
+  height: 400vh; /* ~5 seconds of scroll at normal speed */
   background: var(--cda-black);
+  overflow: hidden;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
 }
 
-/* --- Mosaic Grid (broken grid — asymmetric) --- */
-.cda-mosaic {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  grid-auto-flow: dense;
-  gap: 3px;
-}
-
-/* Tile 1 spans 2 columns (wide anchor) */
-.cda-mosaic__tile--wide {
-  grid-column: span 2;
-}
-
-/* Tile 6 spans 2 rows (tall vertical) */
-.cda-mosaic__tile--tall {
-  grid-row: span 2;
-}
-
-/* --- Tile: 3D flip card --- */
-.cda-mosaic__tile {
-  position: relative;
-  overflow: visible;
-  perspective: 1000px;
-  opacity: 0;
-  transform: scale(0.95);
-  cursor: pointer;
-}
-
-/* Inner wrapper for 3D flip — takes full grid cell size */
-.cda-mosaic__front,
-.cda-mosaic__back {
-  /* Front is in-flow to give tile its size; back is absolute on top */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.cda-mosaic__front {
-  position: relative;
+/* Sticky viewport — grid stays visible while scrolling */
+.cda-gallery-wall__viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   width: 100%;
-  height: 100%;
-  z-index: 2;
+  overflow: hidden;
+  perspective: 1200px;
 }
 
-.cda-mosaic__front img {
+/* Grid layout: sparse, huge images */
+.cda-gallery-wall__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(8px, 1.5vw, 16px);
+  padding: clamp(8px, 1.5vw, 16px);
+  width: 130%;
+  margin-left: -15%;
+  will-change: transform;
+}
+
+/* Individual grid item */
+.cda-gallery-wall__item {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 6px;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+/* Make some items span multiple cells for visual hierarchy */
+.cda-gallery-wall__item--wide {
+  grid-column: span 2;
+  aspect-ratio: 16 / 9;
+}
+
+.cda-gallery-wall__item--tall {
+  grid-row: span 2;
+  aspect-ratio: auto;
+}
+
+/* Image inside item */
+.cda-gallery-wall__item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(80%) brightness(0.75);
-  transition: filter 0.5s ease;
+  border-radius: 6px;
 }
 
-.cda-mosaic__back {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  transform: rotateY(180deg);
-  background: var(--cda-dark);
-  border-left: 3px solid var(--cda-gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Hover: subtle pop */
+.cda-gallery-wall__item:hover img {
+  transform: scale(1.05);
+  transition: transform 0.4s ease;
 }
 
-.cda-mosaic__back-content {
-  padding: 1.5rem;
-  text-align: left;
+/* --- Hero overlay + content centered on top of grid --- */
+.cda-hero--gallery {
+  position: relative;
+  background: var(--cda-black);
 }
 
-/* Flip on hover */
-.cda-mosaic__tile:hover .cda-mosaic__front {
-  transform: rotateY(-180deg);
-}
-
-.cda-mosaic__tile:hover .cda-mosaic__back {
-  transform: rotateY(0deg);
-}
-
-/* Grayscale → color on hover (before flip completes) */
-.cda-mosaic__tile:hover .cda-mosaic__front img {
-  filter: grayscale(0%) brightness(1);
-}
-
-/* Spotlight: dim others when one is hovered */
-.cda-mosaic:has(.cda-mosaic__tile:hover) .cda-mosaic__tile:not(:hover) {
-  opacity: 0.4 !important;
-  transition: opacity 0.3s ease;
-}
-
-.cda-mosaic:has(.cda-mosaic__tile:hover) .cda-mosaic__tile:hover {
-  opacity: 1 !important;
-  z-index: 10;
-}
-
-/* --- Back face typography --- */
-.cda-mosaic__artist {
-  font-family: var(--cda-font-display);
-  font-size: 1.15rem;
-  color: var(--cda-white);
-  margin-bottom: 0.25rem;
-}
-
-.cda-mosaic__credits {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cda-accent);
-  margin-bottom: 0.75rem;
-}
-
-.cda-mosaic__class {
-  font-size: 0.85rem;
-  color: var(--cda-gray-400);
-  margin-bottom: 1rem;
-}
-
-.cda-mosaic__link {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--cda-white);
-  transition: color 0.3s ease;
-}
-
-.cda-mosaic__link:hover {
-  color: var(--cda-accent);
-}
-
-/* --- Breathing animation (sequential pulse) --- */
-.cda-mosaic__tile--breathing .cda-mosaic__front img {
-  filter: grayscale(0%) brightness(1);
-}
-
-.cda-mosaic__tile--breathing {
-  box-shadow: 0 0 20px rgba(228, 181, 4, 0.15);
-}
-
-/* --- Center frosted glass bar --- */
 .cda-hero--gallery .cda-hero__overlay {
-  background: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, rgba(10,10,10,0.4) 0%, rgba(10,10,10,0.75) 100%);
+  z-index: 10;
+  pointer-events: none;
 }
 
 .cda-hero--gallery .cda-hero__content {
-  background: rgba(10, 10, 10, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  padding: 3rem 4rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  text-align: center;
   max-width: 700px;
+  padding: 0 2rem;
+  pointer-events: auto;
 }
 
 .cda-hero--gallery .cda-hero__title {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-family: var(--cda-font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--cda-white);
+  margin-bottom: 0.75rem;
 }
 
 .cda-hero--gallery .cda-hero__subtitle {
-  letter-spacing: 0.08em;
   font-size: clamp(0.85rem, 1.2vw, 1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cda-gray-300);
+  margin-bottom: 2rem;
+}
+
+.cda-hero--gallery .cda-hero__scroll {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+}
+
+/* Hide fixed elements once scrolled past gallery */
+.cda-hero--gallery.cda-gallery--past .cda-hero__overlay,
+.cda-hero--gallery.cda-gallery--past .cda-hero__content,
+.cda-hero--gallery.cda-gallery--past .cda-hero__scroll {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
 /* --- Responsive --- */
 @media (max-width: 1024px) {
-  .cda-mosaic {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .cda-mosaic__tile--wide {
-    grid-column: span 2;
+  .cda-gallery-wall__grid {
+    grid-template-columns: repeat(4, 1fr);
+    width: 120%;
+    margin-left: -10%;
   }
 }
 
 @media (max-width: 768px) {
-  .cda-mosaic {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+  .cda-gallery-wall__grid {
+    grid-template-columns: repeat(3, 1fr);
+    width: 110%;
+    margin-left: -5%;
   }
-  .cda-mosaic__tile--wide {
-    grid-column: span 2;
+  .cda-gallery-wall__item--wide {
+    grid-column: span 1;
   }
-  .cda-mosaic__tile--tall {
-    grid-row: span 1;
-  }
-  .cda-hero--gallery .cda-hero__content {
-    padding: 2rem;
-    margin: 0 1rem;
+  .cda-gallery-wall {
+    height: 300vh;
   }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .cda-mosaic__front,
-  .cda-mosaic__back {
-    transition: none;
+  .cda-gallery-wall__item {
+    transform: none !important;
+    opacity: 1 !important;
   }
-  .cda-mosaic__front img {
-    filter: none;
+  .cda-gallery-wall__grid {
+    transform: none !important;
   }
 }
