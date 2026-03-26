@@ -142,12 +142,23 @@
   }
 }
 
+/* --- Logo section spacing --- */
+.cda-hero--gallery ~ .cda-logos {
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--cda-gray-800);
+}
+
+.cda-hero--gallery ~ .cda-logos .cda-logos__label {
+  padding-left: clamp(1.25rem, 4vw, 3rem);
+  margin-bottom: 1.5rem;
+}
+
 /* --- Text-based logo ticker --- */
 .cda-logos__track--text {
   display: flex;
   gap: 3rem;
   width: max-content;
-  padding: 0 2rem;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
   animation: cda-text-ticker 20s linear infinite;
 }
 
