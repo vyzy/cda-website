@@ -187,12 +187,22 @@
   padding: 2rem 0;
 }
 
+/* Instructor section — constrain height */
+.page-gallery .cda-instructors {
+  overflow: hidden;
+  max-height: 500px;
+}
+
 /* Instructor cards — use concept art not headshots */
 .page-gallery .cda-instructor-card__photo {
   border-radius: 8px;
-  width: 200px;
-  height: 260px;
+  width: 180px;
+  height: 220px;
   object-fit: cover;
+}
+
+.page-gallery .cda-instructor-card {
+  flex: 0 0 220px;
 }
 
 /* --- Skew theme carried through below-fold --- */
