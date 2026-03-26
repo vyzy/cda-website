@@ -68,6 +68,7 @@
 .cda-hero--gallery {
   position: relative;
   background: var(--cda-black);
+  overflow: visible; /* Override shared.css overflow:hidden — needed for fixed hero content */
 }
 
 .cda-hero--gallery .cda-hero__overlay {
