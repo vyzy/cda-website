@@ -18,12 +18,9 @@
   height: 100vh;
   width: 100%;
   overflow: hidden;
-  perspective: 1000px;
-  perspective-origin: 50% 50%;
-  transform-style: preserve-3d;
 }
 
-/* Grid layout — in-flow, scrolled via transform */
+/* Grid layout */
 .cda-gallery-wall__grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -31,7 +28,9 @@
   padding: clamp(6px, 1vw, 12px);
   width: 100%;
   will-change: transform;
-  transform-style: preserve-3d;
+  /* Perspective on the grid itself — overflow:hidden on parent won't conflict */
+  perspective: 1000px;
+  perspective-origin: 50% 50vh; /* 50% of viewport height = center of screen */
 }
 
 /* Individual grid item — no overflow:hidden (clips 3D), no per-item perspective */

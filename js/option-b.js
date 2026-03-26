@@ -47,11 +47,14 @@
         ));
 
         // Move the grid upward — tripled content means more to scroll through
-        // Scroll grid via translateY — calculated from actual grid height
+        // Scroll grid via translateY
+        // Start: grid top aligns with viewport top (show first rows)
+        // End: grid bottom aligns with viewport bottom (show last rows)
         var gridHeight = grid.scrollHeight;
         var scrollableDistance = Math.max(0, gridHeight - viewportHeight);
-        var gridTranslateY = -progress * scrollableDistance;
-        grid.style.transform = 'translateY(' + gridTranslateY + 'px)';
+        // progress 0 = top of grid visible, progress 1 = bottom of grid visible
+        var gridTranslateY = -(progress * scrollableDistance);
+        grid.style.transform = 'translate3d(0,' + gridTranslateY + 'px,0)';
 
         var viewportWidth = window.innerWidth;
 
